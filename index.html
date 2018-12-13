@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #idp{
+        z-index: 5;
+        position: absolute;
+        top: 30px;
+        left: 250px;
+      }
+      #idpp{
+        z-index:6;
+        position: absolute;
+        top: 30px;
+        left: 250px;
+         color: #db3d3d;
+         font-size: 33px;
+
+      }
+      #myTextarea{
+ z-index:6;
+        position: absolute;
+        top: 30px;
+        left: 900px;
+        width: 130px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <textarea id="myTextarea">
+342 Alvin Road
+Ducksburg</textarea>
+       <div id="idp"><button onclick="creakml()">kml</button><br><p id="idpp">aca estoy</p></div>
+    <script>
+      var map;
+      var cuenta=0;
+       var poly ;
+     function pointmio(nlt,nlg)
+     {this.lat=nlt;
+      this.lng=nlg; };
+       var arrayp=[]
+      function initMap() {
+       
+     map = new google.maps.Map(document.getElementById('map'), { center: new google.maps.LatLng(2.177169, -73.784906), zoom:17, mapTypeId: google.maps.MapTypeId.HYBRID, scaleControl: true });
+    var isClosed = false;
+     poly = new google.maps.Polyline({ map: map, path: [], strokeColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2 });
+    google.maps.event.addListener(map, 'click', function (clickEvent) {
+        if (isClosed)
+            return;
+        var markerIndex = poly.getPath().length;
+        var isFirstMarker = markerIndex === 0;
+        var marker = new google.maps.Marker({ map: map, position: clickEvent.latLng, draggable: true });
+        if (isFirstMarker) {
+            google.maps.event.addListener(marker, 'click', function () {
+                if (isClosed)
+                    return;
+                var path = poly.getPath();
+                poly.setMap(null);
+                poly = new google.maps.Polygon({ map: map, path: path, strokeColor: "#FF0000", strokeOpacity: 0.8, strokeWeight: 2, fillColor: "#FF0000", fillOpacity: 0.35 });
+                isClosed = true;
+            });
+        }
+        google.maps.event.addListener(marker, 'drag', function (dragEvent) {
+            poly.getPath().setAt(markerIndex, dragEvent.latLng);
+            escribe("  arrastrando ");
+        });
+        poly.getPath().push(clickEvent.latLng);
+
+        escribe(clickEvent.latLng+"    cue  "+cuenta);
+        cuenta=cuenta+1;
+       
+
+
+          arrayp.push(new pointmio(clickEvent.latLng.lat(),clickEvent.latLng.lng()));
+         // console.log(arrayp);
+    });
+      }
+function escribe(st){
+  document.getElementById("idpp").innerHTML =st;
+
+}
+var dtstrin="";
+function creakml(){
+  for(var idx in arrayp){
+
+dtstrin=dtstrin+String(arrayp[idx].lat)+","+String(arrayp[idx].lng)+"\n";
+  }
+
+    document.getElementById('myTextarea').value =elkml+"\n"+dtstrin+"\n"+elkmlfinal;
+}
+var elkmlfinal='</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></Document></kml>'
+;
+var elkml='<?xml version="1.0" encoding="UTF-8"?>'+
+'<kml xmlns="http://www.opengis.net/kml/2.2">'+
+
+'<Document><name>MynameKML file polygon </name><description>Some description</description><Style id="polyStyID_0"><LineStyle><color>FF0000FF</color><width>5</width></LineStyle><PolyStyle><color>660088ff</color></PolyStyle> </Style><Style id="polyStyID_1"><LineStyle><color>FF000000</color><width>5</width></LineStyle><PolyStyle><color>FF0000FF</color></PolyStyle> </Style><Style id="polyStyID_2"><LineStyle><color>FF000000</color><width>5</width></LineStyle><PolyStyle><color>FFFFFF00</color></PolyStyle> </Style><Style id="polyStyID_3"><LineStyle><color>FF0000FF</color><width>10</width></LineStyle><PolyStyle><color>66CC99FF</color></PolyStyle> </Style><Placemark><name>Polygon 1</name><description><![CDATA[]]></description><styleUrl>#polyStyID_3</styleUrl><Polygon><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><outerBoundaryIs><LinearRing><coordinates>'
+
+ ;
+
+    </script>
+ <script async defer
+   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCV4ya46Yoag-iGeJb5SUwZ2q1Irx0UjnU&callback=initMap">
+    </script>
+  </body>
+</html>
+
