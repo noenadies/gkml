@@ -47,43 +47,71 @@
     <textarea id="myTextarea">
 342 Alvin Road
 Ducksburg</textarea>
-       <div id="idp"><button onclick="creakml()">kml</button><br><p id="idpp">aca estoy</p></div>
+       <div id="idp"><button id="idbtkml" onclick="creakml()">kml</button>
+        <button id="idbtkml" onclick="nuevo()">nuevo</button>
+        <input id="idinput" type="text" name="fname"><br>
+<a id="idbtdes">descarga</a>
+
+<br><p id="idpp"></p></div>
     <script>
+var vw = window.innerWidth;
+var vh = window.innerHeight;
+ document.getElementById('myTextarea').style.position = "absolute";
+  document.getElementById('myTextarea').style.top = String(vh/3)+"px";
+   document.getElementById('myTextarea').style.left = String(vw/10)+"px";
+document.getElementById('myTextarea').style.display = "none";
+document.getElementById('idbtdes').style.display = "none";
+document.getElementById('idbtkml').style.display = "none";
       var map;
       var cuenta=0;
        var poly ;
+        var isClosed = false;
+         var isprimermaka = true;
      function pointmio(nlt,nlg)
      {this.lat=nlt;
       this.lng=nlg; };
        var arrayp=[]
+        var arrayp1=[];
       function initMap() {
        
      map = new google.maps.Map(document.getElementById('map'), { center: new google.maps.LatLng(2.177169, -73.784906), zoom:17, mapTypeId: google.maps.MapTypeId.HYBRID, scaleControl: true });
-    var isClosed = false;
-     poly = new google.maps.Polyline({ map: map, path: [], strokeColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2 });
+   isClosed = false;
+  isprimermaka = true;
+     poly = new google.maps.Polyline({draggable:true, map: map, path: [], strokeColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2 });
     google.maps.event.addListener(map, 'click', function (clickEvent) {
+
         if (isClosed)
             return;
         var markerIndex = poly.getPath().length;
         var isFirstMarker = markerIndex === 0;
         var marker = new google.maps.Marker({ map: map, position: clickEvent.latLng, draggable: true });
-        if (isFirstMarker) {
+        if (isprimermaka) {  isprimermaka = false;
             google.maps.event.addListener(marker, 'click', function () {
                 if (isClosed)
                     return;
                 var path = poly.getPath();
                 poly.setMap(null);
-                poly = new google.maps.Polygon({ map: map, path: path, strokeColor: "#FF0000", strokeOpacity: 0.8, strokeWeight: 2, fillColor: "#FF0000", fillOpacity: 0.35 });
+                poly = new google.maps.Polygon({map: map, path: path, strokeColor: "#FF0000", strokeOpacity: 0.8, strokeWeight: 2, fillColor: "#FF0000", fillOpacity: 0.35 });
                 isClosed = true;
+               
+document.getElementById('idbtkml').style.display = "block";
             });
         }
         google.maps.event.addListener(marker, 'drag', function (dragEvent) {
             poly.getPath().setAt(markerIndex, dragEvent.latLng);
-            escribe("  arrastrando ");
+            arrayp=[]; 
+           arrayp1=[];
+            arrayp1=poly.getPath().getArray();
+           for(var ixx in arrayp1 ){
+ arrayp.push(new pointmio(arrayp1[ixx].lat(),arrayp1[ixx].lng()));
+          
+           }
+            console.log(arrayp1[0].lat());
+          //  escribe("  arrastrando ");
         });
         poly.getPath().push(clickEvent.latLng);
 
-        escribe(clickEvent.latLng+"    cue  "+cuenta);
+       // escribe(clickEvent.latLng+"    cue  "+cuenta);
         cuenta=cuenta+1;
        
 
@@ -98,22 +126,53 @@ function escribe(st){
 }
 var dtstrin="";
 function creakml(){
+
+
+
+  document.getElementById('myTextarea').style.display = "block";
+   document.getElementById('idbtdes').style.display = "block";
+    document.getElementById('idbtkml').style.display = "none";
+document.getElementById('myTextarea').value="";
   for(var idx in arrayp){
 
-dtstrin=dtstrin+String(arrayp[idx].lat)+","+String(arrayp[idx].lng)+"\n";
-  }
+dtstrin=dtstrin+String(arrayp[idx].lng)+","+String(arrayp[idx].lat)+",0.0 ";
+  }dtstrin=dtstrin+String(arrayp[0].lng)+","+String(arrayp[0].lat)+",0.0  ";
 
     document.getElementById('myTextarea').value =elkml+"\n"+dtstrin+"\n"+elkmlfinal;
+document.getElementById('myTextarea').select();
+elem.download = "archivo2.kml";
 }
 var elkmlfinal='</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></Document></kml>'
 ;
 var elkml='<?xml version="1.0" encoding="UTF-8"?>'+
-'<kml xmlns="http://www.opengis.net/kml/2.2">'+
+'<kml xmlns="http://www.opengis.net/kml/2.2">'+"\n"+
 
 '<Document><name>MynameKML file polygon </name><description>Some description</description><Style id="polyStyID_0"><LineStyle><color>FF0000FF</color><width>5</width></LineStyle><PolyStyle><color>660088ff</color></PolyStyle> </Style><Style id="polyStyID_1"><LineStyle><color>FF000000</color><width>5</width></LineStyle><PolyStyle><color>FF0000FF</color></PolyStyle> </Style><Style id="polyStyID_2"><LineStyle><color>FF000000</color><width>5</width></LineStyle><PolyStyle><color>FFFFFF00</color></PolyStyle> </Style><Style id="polyStyID_3"><LineStyle><color>FF0000FF</color><width>10</width></LineStyle><PolyStyle><color>66CC99FF</color></PolyStyle> </Style><Placemark><name>Polygon 1</name><description><![CDATA[]]></description><styleUrl>#polyStyID_3</styleUrl><Polygon><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><outerBoundaryIs><LinearRing><coordinates>'
 
  ;
+ var elem;
+function creartxt(){
+var txt = document.getElementById('myTextarea');
+            txt.value = window.onload + '';
 
+            // se genera y descarga el archivo
+            document.getElementById('idbtdes').onclick = function(code) {
+              this.download= document.getElementById('idinput').value+".kml";
+            this.href = 'data:text/plain;charset=utf-8,'
+            + encodeURIComponent(txt.value);
+            };
+}
+function reloadweb(){
+
+
+ // location.reload();
+}creartxt();
+
+function nuevo(){
+arrayp=[];
+isClosed = false;
+ isprimermaka = true;
+}
     </script>
  <script async defer
    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCV4ya46Yoag-iGeJb5SUwZ2q1Irx0UjnU&callback=initMap">
